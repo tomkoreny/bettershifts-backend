@@ -4,5 +4,5 @@ go:
 before_install:
   - GO111MODULE=on go mod download
   - go get -u github.com/99designs/gqlgen/cmd
-  - go run ./scripts/gqlgen.go
+  - GO111MODULE=on go run ./scripts/gqlgen.go
 script: go build -o build ./server/server.go
