@@ -1,5 +1,7 @@
 .idea
 vendor
+generated.go
+models_gen.go
 
 todo.md
 test.db

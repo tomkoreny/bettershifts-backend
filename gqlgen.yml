@@ -14,13 +14,13 @@ resolver:
   type: Resolver
 models:
   Todo:
-    model: github.com/lordpuma/bettershifts/models.Todo
+    model: github.com/lordpuma/bettershifts-backend/models.Todo
   User:
-    model: github.com/lordpuma/bettershifts/models.User
+    model: github.com/lordpuma/bettershifts-backend/models.User
   Shift:
-    model: github.com/lordpuma/bettershifts/models.Shift
+    model: github.com/lordpuma/bettershifts-backend/models.Shift
   Benefit:
-    model: github.com/lordpuma/bettershifts/models.Benefit
+    model: github.com/lordpuma/bettershifts-backend/models.Benefit
   Workplace:
-    model: github.com/lordpuma/bettershifts/models.Workplace
+    model: github.com/lordpuma/bettershifts-backend/models.Workplace
 
