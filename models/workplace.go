@@ -5,7 +5,8 @@ import (
 )
 
 type Workplace struct {
-  ID     string
+  ID     string `gorm:"primary_key"`
 	Name   string
   gorm.Model
+  users []*User  `gorm:"many2many:users_workplaces;"`
 }

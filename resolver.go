@@ -41,8 +41,11 @@ type benefitResolver struct{ *Resolver }
 
 func (r *benefitResolver) User(ctx context.Context, obj *models.Benefit) (models.User, error) {
 	var user models.User
-	r.Db.First(&user, obj.UserID)
+	r.Db.First(&user, "id", obj.UserID)
 	return user, nil
+}
+func (r *benefitResolver) Date(ctx context.Context, obj *models.Benefit) (string, error) {
+  return obj.Date.Format(time.RFC3339), nil
 }
 
 type mutationResolver struct{ *Resolver }
@@ -73,7 +76,8 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input NewTodo) (model
 		WorkplaceID: input.Workplace,
 		Benefit: input.Benefit,
 	}
-	todo.SetDate(input.Date)
+  newdate, _ := time.Parse(time.RFC3339, input.Date)
+  todo.Date = newdate
 	r.Db.Create(&todo)
 	return todo, nil
 }
@@ -86,9 +90,9 @@ func (r *mutationResolver) CreateShift(ctx context.Context, input NewShift) (mod
 		WorkplaceID: input.Workplace,
 		UserID: input.User,
 	}
-	shift.Start, _ = time.Parse("RFC3339", input.Start)
+	shift.Start, _ = time.Parse(time.RFC3339, input.Start)
   if input.End != nil {
-	  *shift.End, _ = time.Parse("RFC3339", *input.End) 
+	  *shift.End, _ = time.Parse(time.RFC3339, *input.End) 
   }
 	r.Db.Create(&shift)
 	return shift, nil
@@ -114,7 +118,8 @@ func (r *mutationResolver) CreateBenefit(ctx context.Context, input NewBenefit) 
      	Amount: input.Amount,
      	UserID: input.User,
 	}
-	benefit.SetDate(input.Date)
+  newdate, _ := time.Parse(time.RFC3339, input.Date)
+  benefit.Date = newdate
 	r.Db.Create(&benefit)
 	return benefit, nil
 }
@@ -143,9 +148,11 @@ func (r *mutationResolver) EditUser(ctx context.Context, id string, input EditUs
 		user.Wage = *input.Wage
 	}
 	if input.Workplaces != nil {
-		// TODO: Assign correnct workplaces here
+		var workplaces []models.Workplace 
+		r.Db.Where("id in (?)", input.Workplaces).Find(&workplaces)
+		r.Db.Model(&user).Association("Workplaces").Replace(workplaces) 
 	}
-	r.Db.Model(&user).Updates(user)
+	r.Db.Model(&user).Where("id", user.ID).Omit("workplaces").Update(user)
 	return user, nil
 }
 func (r *mutationResolver) EditTodo(ctx context.Context, id string, input EditTodo) (models.Todo, error) {
@@ -153,12 +160,13 @@ func (r *mutationResolver) EditTodo(ctx context.Context, id string, input EditTo
 		return models.Todo{}, fmt.Errorf("Access denied")
 	}
 	var todo models.Todo
-	r.Db.First(&todo, id)
+	r.Db.First(&todo, "id", id)
 	if todo.ID == "" {
 		return todo, errors.New("todo-not-found")
 	}
 	if input.Date != nil {
-		todo.SetDate(*input.Date)
+    newdate, _ := time.Parse(time.RFC3339, *input.Date)
+    todo.Date = newdate
 	}
 	if input.Benefit != nil {
 		todo.Benefit= *input.Benefit
@@ -168,7 +176,7 @@ func (r *mutationResolver) EditTodo(ctx context.Context, id string, input EditTo
 	}
 	if input.Workplace != nil {
     var workplace models.Workplace
-    r.Db.First(&workplace, input.Workplace)
+    r.Db.First(&workplace, "id", input.Workplace)
     if workplace.ID == "" {
       return todo, errors.New("workplace-does-not-exist")
     }
@@ -182,19 +190,19 @@ func (r *mutationResolver) EditShift(ctx context.Context, id string, input EditS
 		return models.Shift{}, fmt.Errorf("Access denied")
 	}
   var shift models.Shift
-  r.Db.First(&shift, id)
+  r.Db.First(&shift, "id", id)
   if shift.ID == "" {
     return shift, errors.New("shift-not-found")
   }
 	if input.Start != nil {
-		shift.Start, _ = time.Parse("RFC3339", *input.Start)
+		shift.Start, _ = time.Parse(time.RFC3339, *input.Start)
 	}
 	if input.End != nil {
-		*shift.End, _ = time.Parse("RFC3339", *input.End)
+		*shift.End, _ = time.Parse(time.RFC3339, *input.End)
 	}
 	if input.Workplace != nil {
     var workplace models.Workplace
-    r.Db.First(&workplace, input.Workplace)
+    r.Db.First(&workplace, "id", input.Workplace)
     if workplace.ID == "" {
       return shift, errors.New("workplace-does-not-exist")
     }
@@ -202,7 +210,7 @@ func (r *mutationResolver) EditShift(ctx context.Context, id string, input EditS
 	}
 	if input.User != nil {
     var user models.User
-    r.Db.First(&user, input.User)
+    r.Db.First(&user, "id", input.User)
     if user.ID == "" {
       return shift, errors.New("user-does-not-exist")
     }
@@ -216,7 +224,7 @@ func (r *mutationResolver) EditWorkplace(ctx context.Context, id string, input E
 		return models.Workplace{}, fmt.Errorf("Access denied")
 	}
   var workplace models.Workplace
-  r.Db.First(&workplace, id)
+  r.Db.First(&workplace, "id", id)
   if workplace.ID == "" {
     return workplace, errors.New("workplace-not-found")
   }
@@ -231,13 +239,13 @@ func (r *mutationResolver) EditBenefit(ctx context.Context, id string, input Edi
 		return models.Benefit{}, fmt.Errorf("Access denied")
 	}
 	var benefit models.Benefit
-	r.Db.First(&benefit, id)
+	r.Db.First(&benefit, "id", id)
 	if benefit.ID == "" {
 	  return benefit, errors.New("benefit-not-found")
 	}
 	if input.User != nil { 
     var user models.User
-    r.Db.First(&user, input.User)
+    r.Db.First(&user, "id", input.User)
     if user.ID == "" {
       return benefit, errors.New("user-does-not-exist")
     }
@@ -247,7 +255,8 @@ func (r *mutationResolver) EditBenefit(ctx context.Context, id string, input Edi
     benefit.Amount = *input.Amount
   }
   if input.Date != nil {
-    benefit.SetDate(*input.Date)
+    newdate, _ := time.Parse(time.RFC3339, *input.Date)
+    benefit.Date = newdate
   }
   if input.Reason != nil {
     benefit.Reason = *input.Reason
@@ -414,9 +423,13 @@ func (r *queryResolver) BenefitByID(ctx context.Context, id string) (models.Bene
 	return benefit, nil
 }
 func (r *queryResolver) Wages(ctx context.Context, month *string) ([]Wage, error) {
-  if user := auth.ForContext(ctx) ; user == nil || !user.IsAdmin {
+  user := auth.ForContext(ctx) 
+  if user == nil || !user.IsAdmin {
 		return []Wage{}, fmt.Errorf("Access denied")
 	}
+  var duration []int
+	r.Db.Raw("select DATEDIFF('mi', start, end) as duration from shifts where start >= '?' AND start <= '?'", "2019-02-01", "2019-02-28").Pluck("duration", &duration)
+  fmt.Println(duration)
 	panic("not implemented")
 }
 
@@ -424,32 +437,35 @@ type shiftResolver struct{ *Resolver }
 
 func (r *shiftResolver) Workplace(ctx context.Context, obj *models.Shift) (models.Workplace, error) {
 	var workplace models.Workplace
-	r.Db.First(&workplace, obj.WorkplaceID)
+	r.Db.First(&workplace, "id", obj.WorkplaceID)
 	return workplace, nil
 }
 func (r *shiftResolver) User(ctx context.Context, obj *models.Shift) (models.User, error) {
 	var user models.User
-	r.Db.First(&user, obj.UserID)
+	r.Db.First(&user, "id", obj.UserID)
 	return user, nil
 }
 func (r *shiftResolver) Start(ctx context.Context, obj *models.Shift) (string, error) {
-  return obj.Start.Format("RFC3339"), nil
+  return obj.Start.Format(time.RFC3339), nil
 }
 func (r *shiftResolver) End(ctx context.Context, obj *models.Shift) (string, error) {
-  return obj.End.Format("RFC3339"), nil
+  return obj.End.Format(time.RFC3339), nil
 }
 
 type todoResolver struct{ *Resolver }
 
 func (r *todoResolver) DoneBy(ctx context.Context, obj *models.Todo) (models.User, error) {
 	var user models.User
-	r.Db.First(&user, obj.UserID)
+	r.Db.First(&user, "id", obj.UserID)
 	return user, nil
 }
 func (r *todoResolver) Workplace(ctx context.Context, obj *models.Todo) (models.Workplace, error) {
 	var workplace models.Workplace
-	r.Db.First(&workplace, obj.WorkplaceID)
+	r.Db.First(&workplace, "id", obj.WorkplaceID)
 	return workplace, nil
+}
+func (r *todoResolver) Date(ctx context.Context, obj *models.Todo) (string, error) {
+  return obj.Date.Format(time.RFC3339), nil
 }
 
 type workplaceResolver struct{ *Resolver }
