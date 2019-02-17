@@ -1,8 +1,4 @@
 language: go
 go:
   - 1.11.x
-before_install:
-  - GO111MODULE=on go mod download
-  - go get -u github.com/99designs/gqlgen/cmd
-  - GO111MODULE=on go run ./scripts/gqlgen.go
-script: go build -o build ./server/server.go
+script: GO111MODULE=on go build -o build ./server/server.go
