@@ -10,8 +10,8 @@ import (
 	"github.com/jinzhu/gorm"
   "github.com/google/uuid"
 
-	"github.com/lordpuma/bettershifts/models"
-	"github.com/lordpuma/bettershifts/auth"
+	"github.com/lordpuma/bettershifts-backend/models"
+	"github.com/lordpuma/bettershifts-backend/auth"
 )
 
 type Resolver struct{

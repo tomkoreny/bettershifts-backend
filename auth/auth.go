@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 	"github.com/jinzhu/gorm"
-	"github.com/lordpuma/bettershifts/models"
+	"github.com/lordpuma/bettershifts-backend/models"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
   "errors"
