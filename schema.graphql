@@ -1,0 +1,154 @@
+scalar DateTime
+
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  username: String!
+  isAdmin: Boolean!
+  shifts: [Shift!]!
+  workplaces: [Workplace!]!
+  wage: Int!
+  benefits: [Benefit!]!
+}
+
+type Shift {
+  id: ID!
+  start: DateTime!
+  end: DateTime!
+  workplace: Workplace!
+  user: User!
+}
+
+type Workplace {
+  id: ID!
+  name: String!
+  users: [User!]!
+}
+
+type Todo {
+  id: ID!
+  name: String!
+  done: Boolean!
+  doneBy: User!
+  workplace: Workplace!
+  date: DateTime!
+  benefit: Int!
+}
+
+type Benefit {
+  id: ID!
+  date: DateTime!
+  reason: String!
+  user: User!
+  amount: Int!
+}
+
+type Wage {
+  user: User!
+  amount: Int!
+}
+
+type Query {
+  users: [User!]!
+  userById(id: ID!): User!
+  workplaces: [Workplace!]!
+  workplaceById(id: ID!): Workplace!
+  todos(date: DateTime, workplace: ID): [Todo!]!
+  todoById(id: ID!): Todo!
+  shifts(since: DateTime, untill: DateTime, workplace: ID, user: ID): [Shift!]!
+  shiftById(id: ID!): Shift!
+  benefits(since: DateTime, untill: DateTime, workplace: ID, user: ID): [Benefit!]!
+  benefitById(id: ID!): Benefit!
+  wages(month: DateTime): [Wage!]!
+}
+
+input NewTodo {
+  name: String!
+  workplace: ID!
+  date: DateTime!
+  benefit: Int!
+}
+
+input EditTodo {
+  name: String
+  workplace: ID
+  date: DateTime
+  benefit: Int
+}
+
+input NewUser {
+  firstName: String!
+  lastName: String!
+  username: String!
+  isAdmin: Boolean!
+  wage: Int!
+  workplaces: [ID!]!
+}
+
+input EditUser {
+  firstName: String
+  lastName: String
+  username: String
+  isAdmin: Boolean
+  wage: Int
+  workplaces: [ID]
+}
+
+input NewShift {
+  start: DateTime!
+  end: DateTime
+  workplace: ID!
+  user: ID!
+}
+
+input EditShift {
+  start: DateTime
+  end: DateTime
+  workplace: ID
+  user: ID
+}
+
+input NewWorkplace {
+  name: String!
+}
+
+input EditWorkplace {
+  name: String
+}
+
+input NewBenefit {
+  date: DateTime!
+  reason: String!
+  user: ID!
+  amount: Int!
+}
+
+input EditBenefit {
+  date: DateTime
+  reason: String
+  user: ID
+  amount: Int
+}
+
+type LoginPayload {
+  token: String!
+  hasPassword: Boolean!
+}
+
+type Mutation {
+  createUser(input: NewUser!): User!
+  createTodo(input: NewTodo!): Todo!
+  createShift(input: NewShift!): Shift!
+  createWorkplace(input: NewWorkplace!): Workplace!
+  createBenefit(input: NewBenefit!): Benefit!
+  editUser(id: ID!, input: EditUser!): User!
+  editTodo(id: ID!, input: EditTodo!): Todo!
+  editShift(id: ID!, input: EditShift!): Shift!
+  editWorkplace(id: ID!, input: EditWorkplace!): Workplace!
+  editBenefit(id: ID!, input: EditBenefit!): Benefit!
+  changePassword(oldpass: String!, newpass: String!): Boolean!
+  login(username: String!, password: String!): LoginPayload!
+  startShift(workplace: ID!): Boolean!
+  stopShift(finishedTodos: [ID!]!): Boolean!
+}
