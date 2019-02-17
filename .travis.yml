@@ -2,6 +2,6 @@ language: go
 go:
   - 1.11.x
 before_install:
-  - go get ./...
-  - go generate ./...
+  - go get ./scripts/gqlgen.go
+  - go run ./scripts/gqlgen.go
 script: go build -o build ./server/server.go
