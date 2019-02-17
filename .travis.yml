@@ -1,0 +1,6 @@
+language: go
+go:
+  - 1.11.x
+before_install:
+  - go generate ./...
+script: go build -o build ./server/server.go
