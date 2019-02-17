@@ -2,5 +2,6 @@ language: go
 go:
   - 1.11.x
 before_install:
+  - dep ensure
   - go generate ./...
 script: go build -o build ./server/server.go
