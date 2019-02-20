@@ -43,7 +43,7 @@ func main() {
 	http.Handle("/", handler.Playground("GraphQL playground", "/query"))
 	http.Handle("/query", handler.GraphQL(bettershifts.NewExecutableSchema(bettershifts.Config{Resolvers: &resolver})))
 
-	err = http.ListenAndServe(":8080", router)
+	err = http.ListenAndServe(port, router)
 	if err != nil {
 		panic(err)
 	}
