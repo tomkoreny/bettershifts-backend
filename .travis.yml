@@ -1,7 +1,7 @@
 language: go
 go:
 - 1.11.x
-script: go build -o build ./server/server.go
+script: go build -o bettershifts-backend ./server/server.go
 deploy:
   provider: heroku
   api_key:
