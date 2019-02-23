@@ -1,0 +1,62 @@
+CREATE TABLE "users" (
+id VARCHAR(255) PRIMARY KEY,
+first_name VARCHAR(255) NOT NULL,
+last_name VARCHAR(255)  NOT NULL,
+user_name VARCHAR(255) UNIQUE NOT NULL,
+is_admin BOOLEAN NOT NULL,
+password VARCHAR(255),
+wage int NOT NULL,
+created_at TIMESTAMP NOT NULL,
+updated_at TIMESTAMP NOT NULL,
+deleted_at TIMESTAMP);
+
+CREATE TABLE "workplaces" (
+id VARCHAR(255) PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+created_at TIMESTAMP NOT NULL,
+updated_at TIMESTAMP NOT NULL,
+deleted_at TIMESTAMP);
+
+CREATE TABLE "benefits" (
+id VARCHAR(255) PRIMARY KEY,
+date TIMESTAMP NOT NULL,
+reason VARCHAR(255)  NOT NULL,
+amount int NOT NULL,
+user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+created_at TIMESTAMP NOT NULL,
+updated_at TIMESTAMP NOT NULL,
+deleted_at TIMESTAMP
+);
+
+CREATE TABLE "todos" (
+id VARCHAR(255) PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+done BOOLEAN NOT NULL,
+date TIMESTAMP NOT NULL,
+benefit INT NOT NULL,
+workplace_id VARCHAR(255) NOT NULL REFERENCES workplaces(id) ON DELETE CASCADE,
+user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+created_at TIMESTAMP NOT NULL,
+updated_at TIMESTAMP NOT NULL,
+deleted_at TIMESTAMP
+);
+
+CREATE TABLE "users_workplaces" (
+id VARCHAR(255) PRIMARY KEY,
+workplace_id VARCHAR(255) NOT NULL REFERENCES workplaces(id) ON DELETE CASCADE,
+user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE "tokens" (
+id VARCHAR(255) PRIMARY KEY,
+user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+token VARCHAR(255)  NOT NULL,
+created_at TIMESTAMP NOT NULL,
+updated_at TIMESTAMP NOT NULL,
+deleted_at TIMESTAMP
+);
+
+INSERT INTO users(id, first_name, last_name, user_name, is_admin, wage, created_at, updated_at)
+VALUES
+ ('59701caf-5b69-47f2-a1a6-76cebce23497', 'Admin', 'Admin', 'admin', true, 999, NOW(), NOW());
+

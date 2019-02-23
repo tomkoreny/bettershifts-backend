@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"log"
 	"net/http"
 	"os"
@@ -15,6 +15,7 @@ import (
 )
 
 const defaultPort = "8080"
+const defaultDb = ""
 
 
 func main() {
@@ -22,18 +23,17 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+	dbAddr := os.Getenv("DATABASE_URL")
+	if dbAddr == "" {
+		dbAddr = defaultDb
+	}
 
-	db, err := gorm.Open("sqlite3", "test.db")
+	db, err := gorm.Open("postgres", dbAddr)
 	if err != nil {
 		fmt.Println(err.Error())
 		panic("failed to connect database")
 	}
 	defer db.Close()
-  /*	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.Todo{})
-	db.AutoMigrate(&models.Shift{})
-	db.AutoMigrate(&models.Benefit{})
-	db.AutoMigrate(&models.Workplace{}) **/
 
 	var resolver = bettershifts.Resolver{Db: db}
 
@@ -47,7 +47,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
