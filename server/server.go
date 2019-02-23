@@ -40,8 +40,8 @@ func main() {
   router := chi.NewRouter()
 	router.Use(auth.Middleware(db))
 
-	http.Handle("/", handler.Playground("GraphQL playground", "/query"))
-	http.Handle("/query", handler.GraphQL(bettershifts.NewExecutableSchema(bettershifts.Config{Resolvers: &resolver})))
+	router.Handle("/", handler.Playground("GraphQL playground", "/query"))
+	router.Handle("/query", handler.GraphQL(bettershifts.NewExecutableSchema(bettershifts.Config{Resolvers: &resolver})))
 
   err = http.ListenAndServe(":" + port, router)
 	if err != nil {
