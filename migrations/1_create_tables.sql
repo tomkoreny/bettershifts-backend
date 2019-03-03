@@ -1,3 +1,4 @@
+-- +migrate Up
 CREATE TABLE "users" (
 id VARCHAR(255) PRIMARY KEY,
 first_name VARCHAR(255) NOT NULL,
@@ -65,4 +66,5 @@ ALTER TABLE tokens ADD CONSTRAINT token_users_fkey FOREIGN KEY (user_id) REFEREN
 INSERT INTO users(id, first_name, last_name, user_name, is_admin, wage, created_at, updated_at)
 VALUES
  ('59701caf-5b69-47f2-a1a6-76cebce23497', 'Admin', 'Admin', 'admin', true, 999, NOW(), NOW());
-
+-- +migrate Down
+DROP ALL TABLES;
