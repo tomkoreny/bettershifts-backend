@@ -7,10 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os" 
-  _ "github.com/lib/pq"
-  "github.com/golang-migrate/migrate/v4"
-  "github.com/golang-migrate/migrate/v4/database/postgres"
-  _ "github.com/golang-migrate/migrate/v4/source/file"
+  "github.com/gobuffalo/packr/v2"
+  "github.com/rubenv/sql-migrate"
 
 	"github.com/99designs/gqlgen/handler"
 	"github.com/lordpuma/bettershifts-backend"
@@ -38,11 +36,17 @@ func main() {
 		panic("failed to connect database")
 	}
 	defer db.Close()
-  driver, err := postgres.WithInstance(db.DB(), &postgres.Config{})
-  m, err := migrate.NewWithDatabaseInstance(
-      "file:///migrations",
-      "postgres", driver)
-  m.Steps(1)
+
+  box := packr.New("migrations", "./migrations")
+  migrations := &migrate.PackrMigrationSource{
+    Box: box,
+  }
+  n, err := migrate.Exec(db.DB(), "postgres", migrations, migrate.Up)
+if err != nil {
+  panic(err)
+    // Handle errors!
+}
+fmt.Printf("Applied %d migrations!\n", n)
 
 	var resolver = bettershifts.Resolver{Db: db}
 
