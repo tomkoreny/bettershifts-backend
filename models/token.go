@@ -1,12 +1,15 @@
 package models
 
 import (
-  "github.com/jinzhu/gorm"
+  //"github.com/jinzhu/gorm"
+  "time"
 )
 
 type Token struct {
   ID     string
   UserID string
 	Token   string
-  gorm.Model
+  CreatedAt time.Time
+  UpdatedAt time.Time
+ // gorm.Model
 }

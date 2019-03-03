@@ -1,0 +1,6 @@
+[psql]
+  dbname = "d4u54hp5thk3qu"
+  host   = "ec2-54-75-245-94.eu-west-1.compute.amazonaws.com"
+  port   = 5432
+  user   = "loyggablujvbuy"
+  pass   = "febbfbe4bf1346cd7479e0f7b60bef6165d66293ca4381498314ba1fbbd0a2a5"

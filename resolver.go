@@ -285,6 +285,8 @@ func (r *mutationResolver) Login(ctx context.Context, username string, password 
       ID: uuid.New().String(),
       UserID: user.ID,
       Token: tokenstring,
+      CreatedAt: time.Now(),
+      UpdatedAt: time.Now(),
     }
     r.Db.Save(&token)
     return LoginPayload{ Token: token.Token, HasPassword: user.Password == "" }, nil

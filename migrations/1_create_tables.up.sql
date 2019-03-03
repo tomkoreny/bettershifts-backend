@@ -22,11 +22,12 @@ id VARCHAR(255) PRIMARY KEY,
 date TIMESTAMP NOT NULL,
 reason VARCHAR(255)  NOT NULL,
 amount int NOT NULL,
-user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+user_id VARCHAR(255) NOT NULL,
 created_at TIMESTAMP NOT NULL,
 updated_at TIMESTAMP NOT NULL,
 deleted_at TIMESTAMP
 );
+ALTER TABLE benefits ADD CONSTRAINT benefit_users_fkey FOREIGN KEY (user_id) REFERENCES users(id);
 
 CREATE TABLE "todos" (
 id VARCHAR(255) PRIMARY KEY,
@@ -34,27 +35,32 @@ name VARCHAR(255) NOT NULL,
 done BOOLEAN NOT NULL,
 date TIMESTAMP NOT NULL,
 benefit INT NOT NULL,
-workplace_id VARCHAR(255) NOT NULL REFERENCES workplaces(id) ON DELETE CASCADE,
-user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+workplace_id VARCHAR(255) NOT NULL,
+user_id VARCHAR(255) NOT NULL,
 created_at TIMESTAMP NOT NULL,
 updated_at TIMESTAMP NOT NULL,
 deleted_at TIMESTAMP
 );
+ALTER TABLE todos ADD CONSTRAINT todo_users_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+ALTER TABLE todos ADD CONSTRAINT todo_workplaces_fkey FOREIGN KEY (workplace_id) REFERENCES workplaces(id);
 
 CREATE TABLE "users_workplaces" (
-id VARCHAR(255) PRIMARY KEY,
-workplace_id VARCHAR(255) NOT NULL REFERENCES workplaces(id) ON DELETE CASCADE,
-user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE
-);
+workplace_id VARCHAR(255) NOT NULL,
+user_id VARCHAR(255) NOT NULL
+); 
+ALTER TABLE users_workplaces ADD CONSTRAINT user_workplace_pkey PRIMARY KEY (user_id, workplace_id);
+ALTER TABLE users_workplaces ADD CONSTRAINT user_workplace_workplaces_fkey FOREIGN KEY (workplace_id) REFERENCES workplaces(id);
+ALTER TABLE users_workplaces ADD CONSTRAINT user_workplace_users_fkey FOREIGN KEY (user_id) REFERENCES users(id);
 
 CREATE TABLE "tokens" (
 id VARCHAR(255) PRIMARY KEY,
-user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+user_id VARCHAR(255) NOT NULL,
 token VARCHAR(255)  NOT NULL,
 created_at TIMESTAMP NOT NULL,
 updated_at TIMESTAMP NOT NULL,
 deleted_at TIMESTAMP
 );
+ALTER TABLE tokens ADD CONSTRAINT token_users_fkey FOREIGN KEY (user_id) REFERENCES users(id);
 
 INSERT INTO users(id, first_name, last_name, user_name, is_admin, wage, created_at, updated_at)
 VALUES
